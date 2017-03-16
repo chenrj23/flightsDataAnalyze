@@ -1,0 +1,18 @@
+{
+  "name": "chenrj",
+  "version": "0.0.1",
+  "description": "no",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.15.2",
+    "log4js": "^1.1.1",
+    "mysql": "^2.13.0",
+    "sequelize": "^3.30.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
