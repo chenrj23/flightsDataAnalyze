@@ -17,6 +17,18 @@
         <p>search {{company}} data from {{startTime}} to {{endTime}}</p>
         <input type="submit" value="提交">
       </form>
+      <table border="1">
+        <tr>
+          <th>startTime</th>
+          <th>endTime</th>
+          <th>amount</th>
+        </tr>
+        <tr>
+          <td :startTime="startTime">{{startTime}}</td>
+          <td :endTime="endTime">{{endTime}}</td>
+          <td :amount="amount">{{amount}}</td>
+        </tr>
+      </table>
     </div>
 
     <script>
@@ -26,13 +38,15 @@
                 startTime: '2017/2/17',
                 endTime: '2017/2/23',
                 company: 'y8',
+                amount: 0
             },
             methods: {
               submit: function() {
                 let url = `http://127.0.0.1:3000/api/getFlightsAmount?company=${this.company}&startTime=${this.startTime}&endTime=${this.endTime}`;
                 console.log(url);
                 this.$http.get(url).then((response) => {
-                    console.log(response);
+                  console.log(response);
+                  this.amount = response.data
                 }, (response) => {
                     console.error(response);
                 });
