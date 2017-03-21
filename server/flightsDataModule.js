@@ -62,7 +62,7 @@ function getPeopleAmount({company, startTime, endTime}){
   });
 }
 
-function getStandardImcomeAmount({company, startTime, endTime}){
+function getStandardIncomeAmount({company, startTime, endTime}){
   return new Promise(function(resolve, reject) {
 
     Flight.findAll({
@@ -98,7 +98,7 @@ function getSeatKMAmount({company, startTime, endTime}){
   });
 }
 
-function getImcomeAmount({company, startTime, endTime, allowance}){
+function getIncomeAmount({company, startTime, endTime}){
   return new Promise(function(resolve, reject) {
 
     Flight.findAll({
@@ -110,7 +110,7 @@ function getImcomeAmount({company, startTime, endTime, allowance}){
       },
       attributes: [[sequelize.fn('SUM', sequelize.col('总收入11')), 'imcomeAmount']]
     }).then(function(data) {
-      resolve(data[0].get('imcomeAmount')/10000/1.11 + allowance)
+      resolve(data[0].get('imcomeAmount')/10000/1.11)
     })
 
   });
@@ -141,9 +141,9 @@ function FlightsData(){
 FlightsData.prototype.getFlightsAmount = getFlightsAmount;
 FlightsData.prototype.getSeatsAmount = getSeatsAmount;
 FlightsData.prototype.getPeopleAmount = getPeopleAmount;
-FlightsData.prototype.getStandardImcomeAmount = getStandardImcomeAmount;
+FlightsData.prototype.getStandardIncomeAmount = getStandardIncomeAmount;
 FlightsData.prototype.getSeatKMAmount = getSeatKMAmount;
-FlightsData.prototype.getImcomeAmount = getImcomeAmount;
+FlightsData.prototype.getIncomeAmount = getIncomeAmount;
 FlightsData.prototype.getFlightTimeAmount = getFlightTimeAmount;
 
 

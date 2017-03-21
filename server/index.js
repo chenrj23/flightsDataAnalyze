@@ -60,16 +60,16 @@ app.get('/api/getPeopleAmount', function (req, res) {
       res.json(result)
     })
 });
-app.get('/api/getStandardImcomeAmount', function (req, res) {
+app.get('/api/getStandardIncomeAmount', function (req, res) {
   const company = req.query.company
   const startTime = req.query.startTime
   const endTime = req.query.endTime
 
 
   let timeStart = new Date()
-  logger.info(`have a req getStandardImcomeAmount from  ${startTime} to ${endTime} by ${company}`)
+  logger.info(`have a req getStandardIncomeAmount from  ${startTime} to ${endTime} by ${company}`)
 
-  FlightsData.getStandardImcomeAmount({company, startTime, endTime})
+  FlightsData.getStandardIncomeAmount({company, startTime, endTime})
     .then(function(result){
       let timeUsed = new Date() - timeStart
       logger.info('Time use :', timeUsed)
@@ -95,16 +95,15 @@ app.get('/api/getSeatKMAmount', function (req, res) {
     })
 });
 
-app.get('/api/getImcomeAmount', function (req, res) {
+app.get('/api/getIncomeAmount', function (req, res) {
   const company = req.query.company
   const startTime = req.query.startTime
   const endTime = req.query.endTime
-  const allowance = req.query.allowance
 
   let timeStart = new Date()
   logger.info(`have a req getImcomeAmount from  ${startTime} to ${endTime} by ${company}`)
 
-  FlightsData.getImcomeAmount({company, startTime, endTime, allowance})
+  FlightsData.getIncomeAmount({company, startTime, endTime})
     .then(function(result){
       let timeUsed = new Date() - timeStart
       logger.info('Time use :', timeUsed)
@@ -131,6 +130,10 @@ app.get('/api/getFlightTimeAmount', function (req, res) {
 });
 
 
-app.listen(3000, function () {
+let server = app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
+
+process.on('SIGINT',()=>{
+  server.close()
+})

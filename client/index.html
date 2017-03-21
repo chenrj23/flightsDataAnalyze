@@ -19,37 +19,186 @@
       </form>
       <table border="1">
         <tr>
-          <th>startTime</th>
-          <th>endTime</th>
-          <th>amount</th>
+          <th>航空公司</th>
+          <th>始日期</th>
+          <th>结束日期</th>
+          <th>航班量</th>
+          <th>布局数</th>
+          <th>旅客量</th>
+          <th>客座率</th>
+          <th>折扣</th>
+          <th>平均票价</th>
+          <th>座公里收入</th>
+          <th>小时收入</th>
+          <th>总收入</th>
+          <th>利用率</th>
         </tr>
         <tr>
-          <td :startTime="startTime">{{startTime}}</td>
-          <td :endTime="endTime">{{endTime}}</td>
-          <td :amount="amount">{{amount}}</td>
+          <td>{{company}}</td>
+          <td>{{startTime}}</td>
+          <td>{{endTime}}</td>
+          <td>{{flightsAmount}}</td>
+          <td>{{seatsAmount}}</td>
+          <td>{{PAX}}</td>
+          <td>{{Number(LF*100).toFixed(0)}}%</td>
+          <td>{{Number(discount*100).toFixed(0)}}%</td>
+          <td>{{averageFare}}</td>
+          <td>{{Number(RASK).toFixed(3)}}</td>
+          <td>{{Number(hourIncome).toFixed(3)}}</td>
+          <td>{{Number(income).toFixed(0)}}</td>
+          <td>{{Number(utilizeRate).toFixed(1)}}</td>
         </tr>
       </table>
     </div>
 
     <script>
-        new Vue({
+
+        var root = new Vue({
             el: '#app',
             data: {
                 startTime: '2017/2/17',
                 endTime: '2017/2/23',
                 company: 'y8',
-                amount: 0
+                flightsAmount: 0,
+                seatsAmount:0,
+                PAX: 0,
+                income: 0,
+                standardIncome: 0,
+                seatKMAmount: 0,
+                flightTimeAmount: 0,
+                averageFlights: 6,
+            },
+            computed: {
+              LF: function(){
+                let result = this.PAX / this.seatsAmount;
+                if (isNaN(result)) {
+                  console.log('LF NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              discount: function(){
+                let result = 10000 * this.income / this.standardIncome;
+                if (isNaN(result)) {
+                  console.log('discount NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              averageFare: function(){
+                let result = 10000 * this.income / this.PAX;
+                if (isNaN(result)) {
+                  console.log('averageFare NaN');
+                  return 0
+                }else {
+                  return Math.round(result)
+                }
+              },
+              RASK: function() {
+                let result = 10000 * this.income / this.seatKMAmount;
+                if (isNaN(result)) {
+                  console.log('RASK NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              hourIncome: function() {
+                let result = this.income / this.flightTimeAmount;
+                if (isNaN(result)) {
+                  console.log('hourIncome NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              utilizeRate: function() {
+                let result = this.flightTimeAmount / this.averageFlights / this.daysLong;
+                if (isNaN(result)) {
+                  console.log('utilizeRate NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              daysLong: function() {
+                let result = (Date.parse(this.endTime)-Date.parse(this.startTime))/(24*60*60*1000)+1
+                if (result < 0) {
+                  console.log('daysLong error');
+                  return result
+                }else {
+                  return result
+                }
+              },
+
             },
             methods: {
-              submit: function() {
-                let url = `http://127.0.0.1:3000/api/getFlightsAmount?company=${this.company}&startTime=${this.startTime}&endTime=${this.endTime}`;
-                console.log(url);
-                this.$http.get(url).then((response) => {
-                  console.log(response);
-                  this.amount = response.data
-                }, (response) => {
-                    console.error(response);
+              getData: function(api, option){
+                return new Promise((resolve, reject)=>{
+                  let url = 'http://127.0.0.1:3000/api/' + api + '?'
+                  for (var argument in option) {
+                    let argumentsString = argument+'='+option[argument] + '&'
+                    url += argumentsString
+                  }
+                  ((api)=>{
+                    this.$http.get(url).then((response) => {
+                      if (response.data) {
+                        resolve(response.data)
+                      }else{
+                        reject(new Error('no data ' + api))
+                      }
+
+                    }, (response) => {
+                      console.error(response);
+                    });
+                  })(api)
                 });
+              },
+              submit: function() {
+                this.getData('getFlightsAmount',{company: this.company, startTime: this.startTime, endTime: this.endTime})
+                  .then((data)=>{
+                    this.flightsAmount = data
+                  }).catch((reason)=>{
+                    console.log(reason);
+                  })
+                this.getData('getSeatsAmount',{company: this.company, startTime: this.startTime, endTime: this.endTime})
+                  .then((data)=>{
+                    this.seatsAmount = data
+                  }).catch((reason)=>{
+                    console.log(reason);
+                  })
+                this.getData('getPeopleAmount',{company: this.company, startTime: this.startTime, endTime: this.endTime})
+                  .then((data)=>{
+                    this.PAX = data
+                  }).catch((reason)=>{
+                    console.log(reason);
+                  })
+                this.getData('getStandardIncomeAmount',{company: this.company, startTime: this.startTime, endTime: this.endTime})
+                  .then((data)=>{
+                    this.standardIncome = data
+                  }).catch((reason)=>{
+                    console.log(reason);
+                  })
+                this.getData('getSeatKMAmount',{company: this.company, startTime: this.startTime, endTime: this.endTime})
+                  .then((data)=>{
+                    this.seatKMAmount = data
+                  }).catch((reason)=>{
+                    console.log(reason);
+                  })
+                this.getData('getIncomeAmount',{company: this.company, startTime: this.startTime, endTime: this.endTime})
+                  .then((data)=>{
+                    this.income = data
+                  }).catch((reason)=>{
+                    console.log(reason);
+                  })
+                this.getData('getFlightTimeAmount',{company: this.company, startTime: this.startTime, endTime: this.endTime})
+                  .then((data)=>{
+                    this.flightTimeAmount = data
+                  }).catch((reason)=>{
+                    console.log(reason);
+                  })
               }
           }
         })
