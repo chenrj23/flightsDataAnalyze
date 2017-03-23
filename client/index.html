@@ -9,14 +9,7 @@
 
 <body>
     <div id="app">
-      <form @submit.prevent="submit">
-
-        <input v-model="startTime" placeholder="put startTime">
-        <input v-model="endTime" placeholder="put endTime">
-        <input v-model="company" placeholder="put company">
-        <p>search {{company}} data from {{startTime}} to {{endTime}}</p>
-        <input type="submit" value="提交">
-      </form>
+      <airlinedata-req></airlinedata-req>
       <table border="1">
         <tr>
           <th>航空公司</th>
@@ -53,88 +46,31 @@
 
     <script>
 
-        var root = new Vue({
-            el: '#app',
-            data: {
-                startTime: '2017/2/17',
-                endTime: '2017/2/23',
-                company: 'y8',
-                flightsAmount: 0,
-                seatsAmount:0,
-                PAX: 0,
-                income: 0,
-                standardIncome: 0,
-                seatKMAmount: 0,
-                flightTimeAmount: 0,
-                averageFlights: 6,
-            },
-            computed: {
-              LF: function(){
-                let result = this.PAX / this.seatsAmount;
-                if (isNaN(result)) {
-                  console.log('LF NaN');
-                  return 0
-                }else {
-                  return result
-                }
-              },
-              discount: function(){
-                let result = 10000 * this.income / this.standardIncome;
-                if (isNaN(result)) {
-                  console.log('discount NaN');
-                  return 0
-                }else {
-                  return result
-                }
-              },
-              averageFare: function(){
-                let result = 10000 * this.income / this.PAX;
-                if (isNaN(result)) {
-                  console.log('averageFare NaN');
-                  return 0
-                }else {
-                  return Math.round(result)
-                }
-              },
-              RASK: function() {
-                let result = 10000 * this.income / this.seatKMAmount;
-                if (isNaN(result)) {
-                  console.log('RASK NaN');
-                  return 0
-                }else {
-                  return result
-                }
-              },
-              hourIncome: function() {
-                let result = this.income / this.flightTimeAmount;
-                if (isNaN(result)) {
-                  console.log('hourIncome NaN');
-                  return 0
-                }else {
-                  return result
-                }
-              },
-              utilizeRate: function() {
-                let result = this.flightTimeAmount / this.averageFlights / this.daysLong;
-                if (isNaN(result)) {
-                  console.log('utilizeRate NaN');
-                  return 0
-                }else {
-                  return result
-                }
-              },
-              daysLong: function() {
-                let result = (Date.parse(this.endTime)-Date.parse(this.startTime))/(24*60*60*1000)+1
-                if (result < 0) {
-                  console.log('daysLong error');
-                  return result
-                }else {
-                  return result
-                }
-              },
-
-            },
-            methods: {
+        let data = {
+          startTime: '2017/2/17',
+          endTime: '2017/2/23',
+          company: 'y8',
+          flightsAmount: 0,
+          seatsAmount:0,
+          PAX: 0,
+          income: 0,
+          standardIncome: 0,
+          seatKMAmount: 0,
+          flightTimeAmount: 0,
+          averageFlights: 6,
+        }
+        Vue.component('airlinedata-req', {
+          template: `<form @submit.prevent="submit">
+                  <input v-model="startTime" placeholder="put startTime">
+                  <input v-model="endTime" placeholder="put endTime">
+                  <input v-model="company" placeholder="put company">
+                  <p>search {{company}} data from {{startTime}} to {{endTime}}</p>
+                  <input type="submit" value="提交">
+                </form>`,
+          data: function(){
+            return data
+          },
+          methods: {
               getData: function(api, option){
                 return new Promise((resolve, reject)=>{
                   let url = 'http://127.0.0.1:3000/api/' + api + '?'
@@ -200,8 +136,79 @@
                     console.log(reason);
                   })
               }
+         },
+        })
+        var root = new Vue({
+            el: '#app',
+            data: data,
+
+            computed: {
+              LF: function(){
+                let result = this.PAX / this.seatsAmount;
+                if (isNaN(result)) {
+                  console.log('LF NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              discount: function(){
+                let result = 10000 * this.income / this.standardIncome;
+                if (isNaN(result)) {
+                  console.log('discount NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              averageFare: function(){
+                let result = 10000 * this.income / this.PAX;
+                if (isNaN(result)) {
+                  console.log('averageFare NaN');
+                  return 0
+                }else {
+                  return Math.round(result)
+                }
+              },
+              RASK: function() {
+                let result = 10000 * this.income / this.seatKMAmount;
+                if (isNaN(result)) {
+                  console.log('RASK NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              hourIncome: function() {
+                let result = this.income / this.flightTimeAmount;
+                if (isNaN(result)) {
+                  console.log('hourIncome NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              utilizeRate: function() {
+                let result = this.flightTimeAmount / this.averageFlights / this.daysLong;
+                if (isNaN(result)) {
+                  console.log('utilizeRate NaN');
+                  return 0
+                }else {
+                  return result
+                }
+              },
+              daysLong: function() {
+                let result = (Date.parse(this.endTime)-Date.parse(this.startTime))/(24*60*60*1000)+1
+                if (result < 0) {
+                  console.log('daysLong error');
+                  return result
+                }else {
+                  return result
+                }
+              },
           }
         })
+
     </script>
 </body>
 
